@@ -39,5 +39,6 @@ build/
 
 ### Environment & Secrets ###
 .env
+.env.*
 application-secret.yml
 *.log
