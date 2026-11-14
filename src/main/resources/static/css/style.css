@@ -1,0 +1,48 @@
+/* Global Styles */
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #2b2f38;
+}
+
+/* Navbar */
+.navbar {
+    background: linear-gradient(135deg, #1d4ed8, #2563eb) !important;
+}
+
+.hover-text-white:hover {
+    color: #ffffff !important;
+    transition: color 0.2s ease-in-out;
+}
+
+/* Product Card */
+.product-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+.product-img {
+    height: 240px;
+    object-fit: cover;
+}
+
+/* Category Card */
+.category-card {
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Badges */
+.badge {
+    font-weight: 500;
+}

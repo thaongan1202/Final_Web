@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main :: layout(~{::#main-content})}">
+<head>
+    <title>Danh sách sản phẩm - UTECommerce</title>
+</head>
+<body>
+<div id="main-content" class="container py-4">
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a th:href="@{/}" class="text-decoration-none">Trang chủ</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Sản phẩm thời trang</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Left Sidebar (Desktop) -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div th:replace="~{layout/sidebar :: sidebar}"></div>
+        </div>
+
+        <!-- Main Product Grid (Right Column) -->
+        <div class="col-lg-9">
+            <!-- Filter Bar / Sort Header -->
+            <div class="bg-white p-3 rounded-3 shadow-sm border mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-outline-primary btn-sm d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                        <i class="bi bi-funnel me-1"></i>Bộ lọc
+                    </button>
+                    <span class="text-muted small" th:text="'Hiển thị ' + ${totalItems != null ? totalItems : 0} + ' sản phẩm'"></span>
+                </div>
+
+                <div class="d-flex align-items-center gap-2">
+                    <label class="small text-muted text-nowrap">Sắp xếp:</label>
+                    <select class="form-select form-select-sm" onchange="location = this.value;">
+                        <option th:value="@{/products(sort='createdAt,desc')}">Mới nhất</option>
+                        <option th:value="@{/products(sort='basePrice,asc')}">Giá tăng dần</option>
+                        <option th:value="@{/products(sort='basePrice,desc')}">Giá giảm dần</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="row g-3" th:if="${products != null and !products.isEmpty()}">
+                <div class="col-md-4 col-sm-6" th:each="prod : ${products}">
+                    <div class="card product-card h-100 border-0 shadow-sm">
+                        <div class="position-relative">
+                            <img th:src="${prod.primaryImageUrl != null ? prod.primaryImageUrl : 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=600'}"
+                                 class="card-img-top product-img" th:alt="${prod.name}">
+                            <span class="badge bg-danger position-absolute top-0 start-0 m-2" th:if="${prod.originalPrice != null}">Giảm giá</span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <small class="text-muted" th:text="${prod.categoryName} ?: 'Thời trang'"></small>
+                            <h6 class="card-title fw-bold text-truncate mt-1">
+                                <a th:href="@{'/products/' + ${prod.slug}}" class="text-dark text-decoration-none" th:text="${prod.name}"></a>
+                            </h6>
+                            <div class="mt-auto pt-2">
+                                <div class="d-flex align-items-baseline gap-2 mb-2">
+                                    <span class="text-danger fw-bold fs-5" th:text="${#numbers.formatDecimal(prod.basePrice, 0, 'POINT', 0, 'POINT')} + ' đ'"></span>
+                                    <span class="text-muted text-decoration-line-through small"
+                                          th:if="${prod.originalPrice != null}"
+                                          th:text="${#numbers.formatDecimal(prod.originalPrice, 0, 'POINT', 0, 'POINT')} + ' đ'"></span>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a th:href="@{'/products/' + ${prod.slug}}" class="btn btn-outline-primary btn-sm flex-grow-1">Chi tiết</a>
+                                    <button class="btn btn-primary btn-sm px-3"><i class="bi bi-cart-plus"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="text-center py-5 bg-white rounded-3 shadow-sm border" th:if="${products == null or products.isEmpty()}">
+                <i class="bi bi-inbox fs-1 text-muted"></i>
+                <h5 class="fw-bold mt-3">Chưa có sản phẩm nào</h5>
+                <p class="text-muted small">Hãy thử tìm kiếm với từ khóa khác hoặc quay lại danh mục tất cả.</p>
+                <a th:href="@{/products}" class="btn btn-primary btn-sm">Xem tất cả sản phẩm</a>
+            </div>
+
+            <!-- Pagination -->
+            <nav class="mt-4" th:if="${totalPages != null and totalPages > 1}">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link" th:href="@{/products(page=${currentPage - 1})}">Trước</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${currentPage == i} ? 'active'">
+                        <a class="page-link" th:href="@{/products(page=${i})}" th:text="${i + 1}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                        <a class="page-link" th:href="@{/products(page=${currentPage + 1})}">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
