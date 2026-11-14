@@ -94,16 +94,16 @@ Tất cả giao diện được đặt trong thư mục `src/main/resources/temp
 
 ---
 
-## 👥 Phân Chia Nhiệm Vụ 4 Thành Viên (M1 - M4)
+## 👥 Phân Chia Nhiệm Vụ 4 Thành Viên
 
 Theo đặc tả tài liệu kiến trúc UTECommerce:
 
 | Thành viên | Trụ cột đảm nhận | Phạm vi package & files chính |
 | :--- | :--- | :--- |
-| **Thành viên 1 (M1)** | **Identity, Security & User** | `config/SecurityConfig`, `auth/`, `user/`, `address/`, `templates/client/login.html`, `register.html`, trang profile, phân quyền CUSTOMER/ADMIN. |
-| **Thành viên 2 (M2)** | **Catalog, Variant & Cloudinary** | `catalog/`, `discovery/`, `media/` (Cloudinary), `Product`, `ProductVariant` (SKU/size/color), upload ảnh gallery, CRUD sản phẩm admin & catalog client. |
-| **Thành viên 3 (M3)** | **Cart, Order, Payment & Voucher** | `cart/`, `order/`, `promotion/`, `payment/`, giỏ hàng, quy trình checkout COD, snapshot đơn hàng, trừ/hoàn tồn kho an toàn, quản lý đơn phía khách và admin. |
-| **Thành viên 4 (M4)** | **Reviews, Notification, Realtime & Dashboard** | `review/`, `returns/`, `notification/`, `dashboard/`, `WebSocketConfig`, STOMP push thông báo trạng thái đơn, duyệt đánh giá sản phẩm, bảng điều khiển admin. |
+| **Yến Vy (M1)** | **Identity, Security & User** | `config/SecurityConfig`, `auth/`, `user/`, `address/`, `templates/client/login.html`, `register.html`, trang profile, phân quyền CUSTOMER/ADMIN. |
+| **Ngọc Trâm (M2)** | **Catalog, Variant & Cloudinary** | `catalog/`, `discovery/`, `media/` (Cloudinary), `Product`, `ProductVariant` (SKU/size/color), upload ảnh gallery, CRUD sản phẩm admin & catalog client. **Phụ trách tạo/cấu hình Cloudinary và tích hợp upload ảnh phía server.** |
+| **Quế Trân (M3)** | **Cart, Order, Payment & Voucher** | `cart/`, `order/`, `promotion/`, `payment/`, giỏ hàng, quy trình checkout COD, snapshot đơn hàng, trừ/hoàn tồn kho an toàn, quản lý đơn phía khách và admin. |
+| **Thảo Ngân (M4)** | **Reviews, Notification, Realtime & Dashboard** | `review/`, `returns/`, `notification/`, `dashboard/`, `WebSocketConfig`, STOMP push thông báo trạng thái đơn, duyệt đánh giá sản phẩm, bảng điều khiển admin. |
 
 ---
 
@@ -115,7 +115,25 @@ Theo đặc tả tài liệu kiến trúc UTECommerce:
 CREATE DATABASE IF NOT EXISTS utecommerce_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-### 2. Cấu hình `src/main/resources/application.yml`
+### 2. Cấu hình thông tin bí mật khi phát triển
+
+Ngọc Trâm phụ trách tài khoản Cloudinary và phần tích hợp upload. Mỗi thành viên cần chạy chức năng upload hãy tạo file cấu hình riêng ở thư mục gốc dự án từ file mẫu:
+
+macOS/Linux:
+```bash
+cp application-secret.example.yml application-secret.yml
+```
+
+Windows PowerShell:
+```powershell
+Copy-Item application-secret.example.yml application-secret.yml
+```
+
+Mở `application-secret.yml` trên máy cá nhân và điền thông tin Cloudinary thật. Spring Boot tự nạp file này khi chạy. File `application-secret.yml` đã được Git bỏ qua, vì vậy không commit hoặc gửi file này lên GitHub; chỉ commit file mẫu `application-secret.example.yml`. Không gửi `api-secret` trong ảnh chụp màn hình hay mã nguồn.
+
+Nếu chưa cần upload ảnh, có thể để file bí mật chưa được tạo. Các giá trị trong `application.yml` và file mẫu chỉ là placeholder, không phải credential thật. Mỗi thành viên cần credential để test upload thì nhận chúng qua kênh riêng của nhóm. Khi triển khai ứng dụng, cấu hình secret trong môi trường deploy/secret store, không dùng file local này.
+
+### 3. Cấu hình `src/main/resources/application.yml`
 ```yaml
 spring:
   datasource:
@@ -124,12 +142,14 @@ spring:
     password: "" # Điền password MySQL của bạn (nếu có)
 
 cloudinary:
-  cloud-name: your_cloud_name
-  api-key: your_api_key
-  api-secret: your_api_secret
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:your_cloud_name}
+  api-key: ${CLOUDINARY_API_KEY:your_api_key}
+  api-secret: ${CLOUDINARY_API_SECRET:your_api_secret}
 ```
 
-### 3. Khởi chạy ứng dụng
+Các biến môi trường `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` và `CLOUDINARY_API_SECRET` cũng được hỗ trợ; chúng hữu ích cho CI hoặc môi trường triển khai.
+
+### 4. Khởi chạy ứng dụng
 Mở terminal tại thư mục gốc của dự án và chạy:
 ```bash
 ./mvnw spring-boot:run
